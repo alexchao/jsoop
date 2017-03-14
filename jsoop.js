@@ -1,5 +1,7 @@
 /**
  * Various OOP styles I've encountered in JS.
+ *
+ * Modules here are just to keep things neat.
  */
 
 /**
@@ -40,14 +42,43 @@ const Prototypal = (function() {
      */
     Rectangle.prototype.constructor = Rectangle;
 
-    return {};
+    return {
+        Shape: Shape,
+        Rectangle: Rectangle
+    };
 
 })();
 
 
+/**
+ * Object Constructor
+ * - no usage of `this` at all
+ * - private members are just constructor function local variables. their
+ *   values are preserved as state by the closure created on the function
+ *   call.
+ * - constructor function works like a factory function. no `new` usage.
+ * - polymorphism achieved through composition(?)
+ */
 const Constructor = (function() {
 
-    /* Object Constructor */
+    const Shape = function() {
+        let x = 0;
+        let y = 0;
+
+        const move = function(dx, dy) {
+            x += dx;
+            y += dy;
+        };
+
+        return { move: move };
+    };
+
+    const Rectangle = function() {
+        const otherStuff = { /* other behavior */ };
+        return Object.assign(Shape(), otherStuff);
+    };
+
+    return { Shape: Shape };
 
 })();
 
