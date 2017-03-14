@@ -1,30 +1,55 @@
 /**
  * Various OOP styles I've encountered in JS.
  */
-const JSOOP = (function() {
+
+/**
+ * Prototypal
+ *
+ * - Constructor function has no return value
+ * - Private members are possible but not straightforward
+ * - Creating objects requires `new` keyword, e.g.:
+ *
+ *      let r = new Rectangle();
+ */
+const Prototypal = (function() {
+
+    function Shape() {
+        this.x = 0;
+        this.y = 0;
+    }
+
+    Shape.prototype.move = function(dx, dy) {
+        this.x += dx;
+        this.y += dy;
+    };
+
+    function Rectangle() {
+        Shape.call(this);
+    }
 
     /**
-     * Prototypal
-     *
-     * - Constructor function has no return value
-     * - Private members are possible but not straightforward
+     * Inheritance happens here.
+     * Equivalent to `= Object.create(Shape.prototype)`.
      */
-    const PrototypalCounter = function(initialValue) {
-        this._count = initialValue ? initialValue : 0;
-    };
+    Rectangle.prototype = new Shape();
 
-    PrototypalCounter.prototype.increment = function(delta) {
-        let d = typeof delta === 'undefined' ? 1 : delta;
-        this._count += delta;
-    };
-
-    PrototypalCounter.prototype.reset = function() { this._count = 0; };
-    PrototypalCounter.prototype.getCount = function() { return this._count; };
-
-    /* Object Constructor */
-
-    /* ES6 Class */
+    /**
+     * Without this line, the constructor would be Shape, which could work,
+     * but sometimes we have some extra behavior to add in the inheriting
+     * object's constructor.
+     */
+    Rectangle.prototype.constructor = Rectangle;
 
     return {};
 
 })();
+
+
+const Constructor = (function() {
+
+    /* Object Constructor */
+
+})();
+
+
+/* ES6 Class */
