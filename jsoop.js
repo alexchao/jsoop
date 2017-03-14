@@ -10,6 +10,7 @@
  * - Constructor function has no return value
  * - Private members are possible but not straightforward
  * - Creating objects requires `new` keyword, e.g.:
+ * - Members added to the prototype get shared across object instances.
  *
  *      let r = new Rectangle();
  */
@@ -26,6 +27,10 @@ const Prototypal = (function() {
     };
 
     function Rectangle() {
+        /**
+         * This call alone is insufficient since Rectangle.prototype is
+         * still just a Rectangle object.
+         */
         Shape.call(this);
     }
 
@@ -37,7 +42,7 @@ const Prototypal = (function() {
 
     /**
      * Without this line, the constructor would be Shape, which could work,
-     * but sometimes we have some extra behavior to add in the inheriting
+     * but usually we have some extra behavior to add in the inheriting
      * object's constructor.
      */
     Rectangle.prototype.constructor = Rectangle;
@@ -52,12 +57,17 @@ const Prototypal = (function() {
 
 /**
  * Object Constructor
+ *
  * - no usage of `this` at all
  * - private members are just constructor function local variables. their
  *   values are preserved as state by the closure created on the function
  *   call.
  * - constructor function works like a factory function. no `new` usage.
  * - polymorphism achieved through composition(?)
+ * - every object has its own copy of member functions, so this style doens't
+ *   take advantage of prototypal sharing of properties across objects.
+ *   maybe in memory-intensive applications this is an issue, but memory is
+ *   cheap now.
  */
 const Constructor = (function() {
 
@@ -73,12 +83,19 @@ const Constructor = (function() {
         return { move: move };
     };
 
-    const Rectangle = function() {
-        const otherStuff = { /* other behavior */ };
-        return Object.assign(Shape(), otherStuff);
+    const Rectangle = function(width, height) {
+        let w = width;
+        let h = height;
+
+        const rectangleBehavior = {
+            getArea: function() {
+                return w * h;
+            }
+        };
+        return Object.assign(Shape(), rectangleBehavior);
     };
 
-    return { Shape: Shape };
+    return { Shape: Shape, Rectangle: Rectangle };
 
 })();
 
